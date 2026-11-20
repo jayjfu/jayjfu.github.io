@@ -1,0 +1,4 @@
+<figure class="figure{% if include.wide %} figure-wide{% endif %}">
+  <img src="{{ include.src | relative_url }}" alt="{{ include.alt | default: include.caption | strip_html }}" loading="lazy">
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: '<p>' | remove: '</p>' }}</figcaption>{% endif %}
+</figure>

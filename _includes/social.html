@@ -1,0 +1,7 @@
+<ul class="{{ include.class | default: '' }}">
+  {% if site.email %}<li><a href="mailto:{{ site.email }}">Email</a></li>{% endif %}
+  {% if site.social.github %}<li><a href="https://github.com/{{ site.social.github }}">GitHub</a></li>{% endif %}
+  {% if site.social.scholar != "" %}<li><a href="{{ site.social.scholar }}">Scholar</a></li>{% endif %}
+  {% if site.social.linkedin != "" %}<li><a href="https://www.linkedin.com/in/{{ site.social.linkedin }}">LinkedIn</a></li>{% endif %}
+  {% if site.social.x != "" %}<li><a href="https://x.com/{{ site.social.x }}">X</a></li>{% endif %}
+</ul>

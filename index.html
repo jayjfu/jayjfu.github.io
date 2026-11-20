@@ -1,42 +1,78 @@
 ---
-layout: page
-description: "Thinking will not overcome fear but action will."
+layout: default
+title: Home
 ---
+<section class="wrap hero">
+  <p class="eyebrow">ML engineer · Search, ranking &amp; LLMs</p>
+  <h1 class="display hero-title">I build systems that <em>find</em>, <em>rank</em> and <em>reason</em>.</h1>
+  <p class="lede">
+    I'm Jay Fu, a machine learning engineer. I've shipped search and ranking improvements in production,
+    and these days I work mostly on large language models: training them, post-training them and making them useful.
+    I write here about what I build and what I learn along the way.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-dark" href="#writing">Read the blog</a>
+    <a class="btn btn-ghost" href="#work">See my work</a>
+  </div>
+  {% include social.html class="inline-links" %}
+</section>
 
-{% for post in paginator.posts %}
-<div class="post-preview">
-    <a href="{{ post.url | prepend: site.baseurl }}">
-        <h2 class="post-title">
-            {{ post.title }}
-        </h2>
-        {% if post.subtitle %}
-        <h3 class="post-subtitle">
-            {{ post.subtitle }}
-        </h3>
-        {% endif %}
-        <div class="post-content-preview">
-            {{ post.content | strip_html | truncate:200 }}
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %} on {{ post.date | date: "%B %-d, %Y" }}
-    </p>
-</div>
-<hr>
-{% endfor %}
+<section class="wrap section" id="writing">
+  <header class="section-head">
+    <span class="section-num">I</span>
+    <h2>Writing</h2>
+    <a class="section-link" href="{{ '/feed.xml' | relative_url }}">RSS</a>
+  </header>
+  {% assign all_tags = site.posts | map: "tags" | join: "," | split: "," | uniq | sort_natural %}
+  {% if all_tags.size > 0 %}
+  <div class="filters" role="group" aria-label="Filter posts by tag">
+    <button type="button" class="chip" aria-pressed="true" data-tag-all>All</button>
+    {% for tag in all_tags %}<button type="button" class="chip" aria-pressed="false" data-tag="{{ tag | downcase }}">#{{ tag }}</button>{% endfor %}
+  </div>
+  {% endif %}
+  <p class="filter-status" hidden><span></span> <button type="button" class="link-btn" data-tag-all>Clear</button></p>
+  <ul class="post-list" data-post-list data-page-size="6">
+    {% for post in site.posts %}{% include post-row.html post=post %}{% endfor %}
+  </ul>
+  <p class="empty-note" hidden>Nothing published under this combination yet.</p>
+  <button type="button" class="btn btn-ghost show-more" hidden>Show more</button>
+</section>
 
-<!-- Pager -->
-{% if paginator.total_pages > 1 %}
-<ul class="pager">
-    {% if paginator.previous_page %}
-    <li class="previous">
-        <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; Newer Posts</a>
-    </li>
-    {% endif %}
-    {% if paginator.next_page %}
-    <li class="next">
-        <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Older Posts &rarr;</a>
-    </li>
-    {% endif %}
-</ul>
-{% endif %}
+<section class="wrap section" id="work">
+  <header class="section-head">
+    <span class="section-num">II</span>
+    <h2>Selected work</h2>
+  </header>
+  <div class="cards">
+    {% for project in site.data.projects %}
+    <article class="card">
+      <p class="card-meta"><span>{{ project.kind }}</span><span>{{ project.year }}</span></p>
+      <h3>{{ project.title }}</h3>
+      <p>{{ project.summary }}</p>
+      <p class="card-links">
+        {% if project.status %}<span class="status">{{ project.status }}</span>{% endif %}
+        {% for link in project.links %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="wrap section" id="focus">
+  <header class="section-head">
+    <span class="section-num">III</span>
+    <h2>What I'm focused on</h2>
+  </header>
+  <p class="section-intro">Each focus is a combination of tags. Pick one to filter the writing above.</p>
+  <div class="focus-grid">
+    {% for focus in site.data.focus %}
+    <button type="button" class="focus-card" aria-pressed="false" data-tags="{{ focus.tags | join: '|' | downcase }}">
+      <span class="focus-tags">{% for tag in focus.tags %}<span class="focus-tag">{{ tag }}</span>{% unless forloop.last %}<span class="plus" aria-hidden="true">+</span>{% endunless %}{% endfor %}</span>
+      <span class="focus-title">{{ focus.title }}</span>
+      <span class="focus-summary">{{ focus.summary }}</span>
+      <span class="focus-count"></span>
+    </button>
+    {% endfor %}
+  </div>
+</section>
+

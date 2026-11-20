@@ -1,0 +1,21 @@
+# Each focus is a combination of post tags. Clicking a focus card filters Writing
+# to posts that carry ALL of its tags (matching ignores case).
+- title: Post-training LLMs for coding
+  summary: Improving LLM post-training (SFT, RL, preference optimization) specifically for coding tasks and coding agents.
+  tags: [LLM, post-training, coding]
+
+- title: Personalized LLMs
+  summary: How to make an LLM adapt to one person, covering memory, preference learning and user-level evaluation.
+  tags: [LLM, personalization]
+
+- title: LLM training from scratch
+  summary: Minimal implementations of pretraining, post-training and evaluation, used to understand each stage end to end.
+  tags: [LLM, training]
+
+- title: Retrieval & ranking
+  summary: Search, recommendation and ads seen through retrieval and ranking, with reproductions of recent industry work.
+  tags: [retrieval, ranking]
+
+- title: VLMs as teachers
+  summary: Open-vocabulary detection, with VLMs pseudo-labeling data for small, fast student models.
+  tags: [VLM, auto-labeling]
