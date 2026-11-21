@@ -1,0 +1,24 @@
+{% assign used_tags = site.posts | map: "tags" | join: "," | split: "," | uniq | sort_natural %}
+{% assign grouped_tags = "" | split: "" %}
+{% for group in site.data.tags %}
+<div class="tag-group">
+  <p class="tag-group-title">{{ group.group }}</p>
+  <div class="tag-group-list">
+    {% for tag in group.tags %}{% assign count = site.tags[tag].size | default: 0 %}{% assign grouped_tags = grouped_tags | push: tag %}
+    <button type="button" class="chip tag-chip{% if count == 0 %} is-empty{% endif %}" aria-pressed="false" data-tag="{{ tag | downcase }}" data-label="{{ tag }}"{% if include.scroll %} data-scroll{% endif %}>{{ tag }}{% if count > 0 %}<span class="tag-count">{{ count }}</span>{% endif %}</button>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+{% assign other_tags = "" | split: "" %}
+{% for tag in used_tags %}{% unless grouped_tags contains tag %}{% assign other_tags = other_tags | push: tag %}{% endunless %}{% endfor %}
+{% if other_tags.size > 0 %}
+<div class="tag-group">
+  <p class="tag-group-title">Other</p>
+  <div class="tag-group-list">
+    {% for tag in other_tags %}
+    <button type="button" class="chip tag-chip" aria-pressed="false" data-tag="{{ tag | downcase }}" data-label="{{ tag }}"{% if include.scroll %} data-scroll{% endif %}>{{ tag }}<span class="tag-count">{{ site.tags[tag].size }}</span></button>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

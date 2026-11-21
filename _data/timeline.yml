@@ -1,0 +1,41 @@
+# Education and experience, oldest first. Shown left to right in the intro.
+# type: education | work
+- type: education
+  org: Fudan University
+  role: B.S. in Computer Science
+  dates: 2012 – 2016
+  place: Shanghai
+
+- type: education
+  org: Fudan University
+  role: M.S. in Computer Science, NLP
+  dates: 2016 – 2019
+  place: Shanghai
+  note: 1st place, NLPCC-DBQA
+
+- type: work
+  org: Tencent
+  role: Intern, Query Understanding
+  dates: Jun – Aug 2018
+  place: Shenzhen
+  note: LSTM-CRF query intent model
+
+- type: work
+  org: Bigo Technology
+  role: Algorithm Engineer, Video Search & Recommendation
+  dates: 2019 – 2021
+  place: Beijing
+  note: Learning-to-rank with DIN and MMoE
+
+- type: work
+  org: Apple
+  role: Machine Learning Engineer, Web Search Quality
+  dates: 2021 – 2023
+  place: Beijing
+  note: Synonym mining and query rewriting
+
+- type: education
+  org: San José State University
+  role: M.S. in Artificial Intelligence
+  dates: 2025 – Dec 2026
+  place: San José

@@ -1,0 +1,14 @@
+# Tag groups for the right rail and the Writing filters, shown in this order.
+# Use the exact spelling (and capitalization) here and in a post's `tags:` so counts line up.
+# Tags used by posts but not listed here appear under "Other".
+- group: Highlights
+  tags: [LLM Coding, LLM Personalization, LLM Training, Retrieval and Ranking, Vision-Language Models]
+
+- group: Methods
+  tags: [SFT, RLHF, DPO, Reward Modeling, Knowledge Distillation, Neural Network Search, Bi-encoder, Cross-encoder, Learning to Rank]
+
+- group: Task Name
+  tags: [Code Generation, Semantic Search, Question Answering, Query Rewriting, Object Detection, Auto-labeling]
+
+- group: Task Type
+  tags: ["NLP: Text-to-Text", "Information Retrieval: Query-to-Document", "Computer Vision: Image-to-Text", "Computer Vision: Image-to-Boxes"]
