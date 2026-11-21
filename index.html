@@ -1,78 +1,143 @@
 ---
 layout: default
 title: Home
+toc: true
 ---
-<section class="wrap hero">
-  <p class="eyebrow">ML engineer · Search, ranking &amp; LLMs</p>
-  <h1 class="display hero-title">I build systems that <em>find</em>, <em>rank</em> and <em>reason</em>.</h1>
-  <p class="lede">
-    I'm Jay Fu, a machine learning engineer. I've shipped search and ranking improvements in production,
-    and these days I work mostly on large language models: training them, post-training them and making them useful.
-    I write here about what I build and what I learn along the way.
-  </p>
-  <div class="hero-actions">
-    <a class="btn btn-dark" href="#writing">Read the blog</a>
-    <a class="btn btn-ghost" href="#work">See my work</a>
-  </div>
-  {% include social.html class="inline-links" %}
-</section>
-
-<section class="wrap section" id="writing">
-  <header class="section-head">
-    <span class="section-num">I</span>
-    <h2>Writing</h2>
-    <a class="section-link" href="{{ '/feed.xml' | relative_url }}">RSS</a>
-  </header>
-  {% assign all_tags = site.posts | map: "tags" | join: "," | split: "," | uniq | sort_natural %}
-  {% if all_tags.size > 0 %}
-  <div class="filters" role="group" aria-label="Filter posts by tag">
-    <button type="button" class="chip" aria-pressed="true" data-tag-all>All</button>
-    {% for tag in all_tags %}<button type="button" class="chip" aria-pressed="false" data-tag="{{ tag | downcase }}">#{{ tag }}</button>{% endfor %}
-  </div>
-  {% endif %}
-  <p class="filter-status" hidden><span></span> <button type="button" class="link-btn" data-tag-all>Clear</button></p>
-  <ul class="post-list" data-post-list data-page-size="6">
-    {% for post in site.posts %}{% include post-row.html post=post %}{% endfor %}
-  </ul>
-  <p class="empty-note" hidden>Nothing published under this combination yet.</p>
-  <button type="button" class="btn btn-ghost show-more" hidden>Show more</button>
-</section>
-
-<section class="wrap section" id="work">
-  <header class="section-head">
-    <span class="section-num">II</span>
-    <h2>Selected work</h2>
-  </header>
-  <div class="cards">
-    {% for project in site.data.projects %}
-    <article class="card">
-      <p class="card-meta"><span>{{ project.kind }}</span><span>{{ project.year }}</span></p>
-      <h3>{{ project.title }}</h3>
-      <p>{{ project.summary }}</p>
-      <p class="card-links">
-        {% if project.status %}<span class="status">{{ project.status }}</span>{% endif %}
-        {% for link in project.links %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}
+<div class="wrap home-grid">
+  <div class="home-main">
+    <section class="section hero" id="about" data-toc="About me">
+      <p class="eyebrow">ML engineer · Search, ranking &amp; LLMs</p>
+      <h1 class="display hero-title">I build systems that <em>find</em>, <em>rank</em> and <em>reason</em>.</h1>
+      <p class="lede">
+        I'm Jay Fu, a machine learning engineer. I spent four years on web and video search, ranking and recommendation
+        at Apple and BIGO, and I'm now finishing an M.S. in Artificial Intelligence at San José State University.
       </p>
-    </article>
-    {% endfor %}
-  </div>
-</section>
+      <p class="lede lede-follow">
+        These days I <a href="#focus">focus on three areas</a>: training and post-training large language models,
+        especially for coding and personalization; retrieval and ranking; and vision-language models as teachers for small, fast detectors.
+        I write here about what I build and what I learn along the way.
+      </p>
+      {% if site.posts.size > 0 %}
+      <div class="recent">
+        <p class="recent-head"><span>Recent writing</span><a href="#writing">All posts →</a></p>
+        <ol class="recent-list" data-recent data-batch="2">
+          {% for post in site.posts %}
+          <li class="recent-item">
+            <a href="{{ post.url | relative_url }}">
+              <span class="recent-title">{{ post.title }}</span>
+              {% if post.description %}<span class="recent-desc">{{ post.description }}</span>{% endif %}
+            </a>
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="recent-hint" hidden>Scroll for more</p>
+      </div>
+      {% endif %}
+      {% include social.html class="inline-links" %}
 
-<section class="wrap section" id="focus">
-  <header class="section-head">
-    <span class="section-num">III</span>
-    <h2>What I'm focused on</h2>
-  </header>
-  <p class="section-intro">Each focus is a combination of tags. Pick one to filter the writing above.</p>
-  <div class="focus-grid">
-    {% for focus in site.data.focus %}
-    <button type="button" class="focus-card" aria-pressed="false" data-tags="{{ focus.tags | join: '|' | downcase }}">
-      <span class="focus-tags">{% for tag in focus.tags %}<span class="focus-tag">{{ tag }}</span>{% unless forloop.last %}<span class="plus" aria-hidden="true">+</span>{% endunless %}{% endfor %}</span>
-      <span class="focus-title">{{ focus.title }}</span>
-      <span class="focus-summary">{{ focus.summary }}</span>
-      <span class="focus-count"></span>
-    </button>
-    {% endfor %}
-  </div>
-</section>
+      <div class="timeline-block">
+        <p class="timeline-head">
+          <span>Education and experience</span>
+          <span class="timeline-legend"><span class="tl-key tl-key-work"></span>Work<span class="tl-key tl-key-education"></span>Education</span>
+        </p>
+        <div class="timeline">
+          <ol class="timeline-track" style="--count: {{ site.data.timeline.size }}">
+            {% for item in site.data.timeline %}
+            <li class="tl-item tl-{{ item.type }}">
+              <div class="tl-card">
+                <span class="tl-date">{{ item.dates }}</span>
+                <strong class="tl-org">{{ item.org }}</strong>
+                <span class="tl-role">{{ item.role }}</span>
+                {% if item.note %}<span class="tl-note">{{ item.note }}</span>{% endif %}
+              </div>
+              <span class="tl-axis"><span class="tl-dot"></span></span>
+            </li>
+            {% endfor %}
+          </ol>
+        </div>
+      </div>
 
+      <div class="now">
+        <span class="now-label"><span class="now-dot" aria-hidden="true"></span>Now building</span>
+        <ul>
+          {% for area in site.data.focus %}{% for project in area.projects %}{% if project.status %}
+          <li><a href="#{{ area.id }}">{{ project.title }}</a></li>
+          {% endif %}{% endfor %}{% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="focus" data-toc="Focus">
+      <header class="section-head">
+        <span class="section-num">I</span>
+        <h2>What I'm focused on</h2>
+      </header>
+      <p class="section-intro">{{ site.data.focus.size }} areas, each with the topics I write about and the projects I've built. Pick a topic to filter the writing below.</p>
+      {% for area in site.data.focus %}
+      <article class="area" id="{{ area.id }}" data-toc="{{ area.title }}" data-toc-level="3">
+        <header class="area-head">
+          <span class="area-index">{{ forloop.index | prepend: "0" }}</span>
+          <div>
+            <h3 class="area-title">{{ area.title }}</h3>
+            <p class="area-summary">{{ area.summary }}</p>
+          </div>
+        </header>
+        <p class="area-label">Topics</p>
+        <div class="area-topics">
+          {% for topic in area.topics %}
+          <button type="button" class="focus-card" aria-pressed="false" data-tags="{{ topic.tags | join: '|' | downcase }}">
+            <span class="focus-title">{{ topic.title }}</span>
+            <span class="focus-summary">{{ topic.summary }}</span>
+            <span class="focus-tags">{% for tag in topic.tags %}<span class="focus-tag">{{ tag }}</span>{% unless forloop.last %}<span class="plus" aria-hidden="true">+</span>{% endunless %}{% endfor %}</span>
+            <span class="focus-count"></span>
+          </button>
+          {% endfor %}
+        </div>
+        {% if area.projects.size > 0 %}
+        <p class="area-label">Projects</p>
+        <div class="cards">
+          {% for project in area.projects %}
+          <article class="card">
+            <p class="card-meta"><span>{{ project.kind }}</span><span>{{ project.year }}</span></p>
+            <h4>{{ project.title }}</h4>
+            <p>{{ project.summary }}</p>
+            <p class="card-links">
+              {% if project.status %}<span class="status">{{ project.status }}</span>{% endif %}
+              {% for link in project.links %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}
+            </p>
+          </article>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </section>
+
+    <section class="section" id="writing" data-toc="Writing">
+      <header class="section-head">
+        <span class="section-num">II</span>
+        <h2>Writing</h2>
+        <a class="section-link" href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      </header>
+      <div class="filters" role="group" aria-label="Filter posts by tag">
+        <button type="button" class="chip" aria-pressed="true" data-tag-all>All posts</button>
+        {% include tag-groups.html %}
+      </div>
+      <p class="filter-status" hidden><span></span> <button type="button" class="link-btn" data-tag-all>Clear</button></p>
+      <ul class="post-list" data-post-list data-page-size="6">
+        {% for post in site.posts %}{% include post-row.html post=post %}{% endfor %}
+      </ul>
+      <p class="empty-note" hidden>Nothing published under this combination yet.</p>
+      <button type="button" class="btn btn-ghost show-more" hidden>Show more</button>
+    </section>
+  </div>
+
+  <aside class="home-rail">
+    <nav class="toc toc-home" aria-label="On this page"><p class="toc-title">On this page</p><ol></ol></nav>
+    <div class="rail-tags" role="group" aria-label="Filter posts by tag">
+      <p class="toc-title">Tags</p>
+      {% include tag-groups.html scroll=true %}
+    </div>
+  </aside>
+</div>

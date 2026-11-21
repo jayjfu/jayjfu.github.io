@@ -45,28 +45,76 @@
     });
   }
 
-  const toc = document.querySelector(".toc");
-  if (toc && prose) {
-    const headings = [...prose.querySelectorAll("h2[id], h3[id]")];
-    if (headings.length < 2) toc.classList.add("empty");
-    const list = toc.querySelector("ol");
-    const links = headings.map((heading) => {
-      const item = document.createElement("li");
-      item.className = `lvl-${heading.tagName[1]}`;
-      const link = document.createElement("a");
-      link.href = `#${heading.id}`;
-      link.textContent = heading.firstChild.textContent.trim();
-      item.append(link);
-      list.append(item);
-      return link;
-    });
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        links.forEach((link) => link.classList.toggle("active", link.hash === `#${entry.target.id}`));
+  if (document.body.classList.contains("has-toc")) {
+    const entries = prose
+      ? [...prose.querySelectorAll("h2[id], h3[id]")].map((heading) => ({
+          id: heading.id, level: heading.tagName[1], element: heading,
+          label: heading.textContent.replace(/#$/, "").trim(),
+        }))
+      : [...document.querySelectorAll("main [data-toc][id]")].map((block) => ({
+          id: block.id, level: block.dataset.tocLevel || "2", label: block.dataset.toc,
+          element: block.querySelector(":scope > .section-head, :scope > .area-head") || block,
+        }));
+    const tocs = [...document.querySelectorAll(".toc")];
+    const tocBar = document.querySelector(".toc-bar");
+
+    if (entries.length < 2) {
+      document.body.classList.remove("has-toc");
+      tocs.forEach((toc) => toc.classList.add("empty"));
+    } else {
+      const lists = [...tocs.map((toc) => toc.querySelector("ol")), tocBar?.querySelector("ol")].filter(Boolean);
+      const links = lists.flatMap((list) => entries.map((entry) => {
+        const item = document.createElement("li");
+        item.className = `lvl-${entry.level}`;
+        const link = document.createElement("a");
+        link.href = `#${entry.id}`;
+        link.dataset.id = entry.id;
+        link.textContent = entry.label;
+        item.append(link);
+        list.append(item);
+        return link;
+      }));
+
+      const current = tocBar?.querySelector(".toc-bar-current");
+      const toggle = tocBar?.querySelector(".toc-bar-toggle");
+      const barList = tocBar?.querySelector(".toc-bar-list");
+      const setOpen = (open) => {
+        if (!toggle) return;
+        toggle.setAttribute("aria-expanded", String(open));
+        barList.hidden = !open;
+      };
+      toggle?.addEventListener("click", () => setOpen(barList.hidden));
+      barList?.addEventListener("click", (event) => { if (event.target.closest("a")) setOpen(false); });
+      document.addEventListener("click", (event) => { if (tocBar && !tocBar.contains(event.target)) setOpen(false); });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && toggle?.getAttribute("aria-expanded") === "true") { setOpen(false); toggle.focus(); }
       });
-    }, { rootMargin: "0px 0px -75% 0px" });
-    headings.forEach((heading) => observer.observe(heading));
+
+      let activeId;
+      const update = () => {
+        const line = Math.max(180, innerHeight * 0.3);
+        const atBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+        let active = atBottom ? entries.at(-1) : null;
+        if (!active) {
+          for (const entry of entries) {
+            if (entry.element.getBoundingClientRect().top > line) break;
+            active = entry;
+          }
+        }
+        if (active?.id === activeId) return;
+        activeId = active?.id;
+        links.forEach((link) => link.classList.toggle("active", link.dataset.id === activeId));
+        if (current) current.textContent = active ? active.label : "";
+      };
+      let ticking = false;
+      addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => { ticking = false; update(); });
+      }, { passive: true });
+      addEventListener("resize", update);
+      update();
+    }
   }
 
   const postList = document.querySelector("[data-post-list]");
@@ -83,7 +131,8 @@
     const hasAll = (row, tags) => tags.every((tag) => tagsOf(row).includes(tag));
     const labels = new Map();
     document.querySelectorAll(".focus-tag, .chip[data-tag]").forEach((element) => {
-      labels.set(element.textContent.replace(/^#/, "").toLowerCase(), element.textContent.replace(/^#/, ""));
+      const label = element.dataset.label || element.textContent.replace(/^#/, "");
+      labels.set(label.toLowerCase(), label);
     });
     let selected = [];
     let visibleCount = pageSize;
@@ -97,7 +146,7 @@
       moreButton.textContent = `Show more (${remaining})`;
       emptyNote.hidden = matching.length > 0;
       tagChips.forEach((chip) => chip.setAttribute("aria-pressed", String(selected.includes(chip.dataset.tag))));
-      document.querySelector(".chip[data-tag-all]")?.setAttribute("aria-pressed", String(!selected.length));
+      document.querySelectorAll(".chip[data-tag-all]").forEach((chip) => chip.setAttribute("aria-pressed", String(!selected.length)));
       status.hidden = !selected.length;
       let activeFocus = "";
       focusCards.forEach((card) => {
@@ -115,6 +164,9 @@
     tagChips.forEach((chip) => chip.addEventListener("click", () => {
       const tag = chip.dataset.tag;
       select(selected.includes(tag) ? selected.filter((other) => other !== tag) : [...selected, tag]);
+      const writing = document.getElementById("writing");
+      const box = writing.getBoundingClientRect();
+      if (chip.hasAttribute("data-scroll") && (box.top > innerHeight * 0.6 || box.bottom < 200)) writing.scrollIntoView({ behavior: "smooth" });
     }));
     clearButtons.forEach((button) => button.addEventListener("click", () => select([])));
     moreButton.addEventListener("click", () => { visibleCount += pageSize; render(); });
@@ -127,6 +179,33 @@
       });
     });
     render();
+  }
+
+  const recent = document.querySelector("[data-recent]");
+  if (recent) {
+    const items = [...recent.children];
+    const batch = Number(recent.dataset.batch) || 2;
+    const hint = document.querySelector(".recent-hint");
+    let shown = Math.min(items.length, batch * 2);
+    const reveal = () => items.forEach((item, index) => (item.hidden = index >= shown));
+    const fit = () => {
+      recent.style.maxHeight = items.length > batch ? `${items[batch].offsetTop + 44}px` : "";
+    };
+    const sync = () => {
+      const below = recent.scrollHeight - recent.scrollTop - recent.clientHeight;
+      if (below < 60 && shown < items.length) {
+        shown = Math.min(items.length, shown + batch);
+        reveal();
+      }
+      const more = recent.scrollHeight - recent.scrollTop - recent.clientHeight > 4;
+      recent.classList.toggle("has-more", more);
+      hint.hidden = !more || recent.scrollTop > 0;
+    };
+    reveal();
+    fit();
+    sync();
+    recent.addEventListener("scroll", sync, { passive: true });
+    addEventListener("resize", () => { fit(); sync(); });
   }
 
   const navLinks = [...document.querySelectorAll(".nav a[href*='#']")];

@@ -3,7 +3,7 @@
 <head>
 {% include head.html %}
 </head>
-<body class="{{ page.layout }}">
+<body class="{{ page.layout }}{% if page.toc %} has-toc{% endif %}">
 {% include header.html %}
 <main id="content">
 {{ content }}

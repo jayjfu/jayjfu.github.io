@@ -17,7 +17,7 @@ category: Research        # Research | Notes | Findings, used by the blog filter
 tags: [post-training, dpo]
 updated: 2026-12-01       # optional
 math: true                # default true for posts
-toc: true                 # sticky "On this page" sidebar
+toc: true                 # "On this page" sidebar; a sticky bar on narrower screens
 ---
 ```
 
